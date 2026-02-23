@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТЕСТ 1: Улучшенная Версия</title>
+    <style>
+        /* --- НАСТРОЙКИ ДИЗАЙНА --- */
+        :root {
+            --bg-color: #0f0f0f;
+            --text-color: #e0e0e0;
+            --accent-color: #a0a0a0;
+            --dim-color: #606060;
+            --font-main: 'Courier New', monospace;
+            --border-style: none;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+            --button-bg: #1a1a1a;
+            --button-hover-bg: #333333;
+            --transition-speed: 0.3s;
+        }
+
+        /* Тема 1: Ночь */
+        body.theme-night {
+            --bg-color: #0f0f0f;
+            --text-color: #e0e0e0;
+            --accent-color: #a0a0a0;
+            --dim-color: #606060;
+            --shadow-color: rgba(255, 255, 255, 0.1);
+            --button-bg: #1a1a1a;
+            --button-hover-bg: #333333;
+        }
+
+        /* Тема 2: День */
+        body.theme-day {
+            --bg-color: #f5f5f5;
+            --text-color: #333333;
+            --accent-color: #555555;
+            --dim-color: #888888;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --button-bg: #e0e0e0;
+            --button-hover-bg: #cccccc;
+        }
+
+        /* Тема 3: Дневник */
+        body.theme-journal {
+            --bg-color: #f9f1e1;
+            --text-color: #4a4a4a;
+            --accent-color: #8b5a2b;
+            --dim-color: #a0a0a0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --button-bg: #e8d8c4;
+            --button-hover-bg: #d4c4a8;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            transition: background-color 1s ease, color var(--transition-speed);
+            overflow-y: scroll;
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0));
+        }
+
+        #game-wrapper {
+            width: 100%;
+            max-width: 800px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+            position: relative;
+            transition: border-color var(--transition-speed);
+            box-shadow: 0 0 20px var(--shadow-color);
+        }
+
+        .top-bar {
+            padding: 15px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-bottom: 1px solid var(--dim-color);
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-color);
+            z-index: 10;
+        }
+
+        .control-btn {
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: 1px solid var(--accent-color);
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            transition: all var(--transition-speed);
+            border-radius: 5px;
+            flex-shrink: 0;
+        }
+
+        .control-btn:hover {
+            background-color: var(--button-hover-bg);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        /* --- НОВОЕ МЕНЮ --- */
+        .menu-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .menu-toggle-btn {
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: 1px solid var(--accent-color);
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            transition: all var(--transition-speed);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .menu-toggle-btn:hover {
+            background-color: var(--button-hover-bg);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--bg-color);
+            border: 1px solid var(--dim-color);
+            border-radius: 5px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            z-index: 20;
+            display: none;
+            min-width: 150px;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 10px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            transition: background-color var(--transition-speed);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+        /* --- */
+
+        #content-area {
+            padding: 40px 30px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .dialogue-marker { 
+            color: var(--dim-color); 
+            margin-right: 5px; 
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #owl-logo {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 50px auto;
+            display: block;
+            fill: none;
+            stroke: var(--accent-color);
+            stroke-width: 2;
+            stroke-linejoin: round;
+            transition: stroke var(--transition-speed);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .choice-container {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .choice-btn {
+            background: var(--button-bg);
+            color: var(--text-color);
+            border: 2px solid var(--accent-color);
+            padding: 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.2s;
+            font-family: var(--font-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn:hover {
+            background-color: var(--button-hover-bg);
+            color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px var(--shadow-color);
+        }
+
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .choice-btn:hover::before {
+            left: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            border-top: 2px solid var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding: 20px 0;
+            animation: fadeIn 1s ease-out;
+            position: relative;
+        }
+
+        /* --- НОВОЕ: ВЕРСИЯ --- */
+        .version-tag {
+            position: absolute;
+            bottom: -25px;
+            right: 0;
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 5;
+        }
+
+        body.light-mode .version-tag {
+            color: var(--text-color);
+            background-color: var(--dim-color);
+        }
+        /* --- */
+
+        #status-bar {
+            padding: 10px;
+            background-color: rgba(0,0,0,0.2);
+            border-bottom: 1px solid var(--dim-color);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--dim-color);
+            display: none;
+        }
+
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        /* Улучшенная прокрутка */
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 600px) {
+            #game-wrapper {
+                max-width: 100%;
+            }
+            
+            .top-bar {
+                padding: 10px;
+            }
+            
+            #content-area {
+                padding: 20px 15px;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+            
+            .choice-btn {
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+                letter-spacing: 3px;
+            }
+
+            .version-tag {
+                font-size: 0.6rem;
+                padding: 2px 6px;
+                bottom: -20px;
+            }
+        }
+
+        /* Индикатор загрузки */
+        .loading {
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        /* Анимация текста при смене сцены */
+        .scene-transition {
+            animation: sceneTransition 0.3s ease-in-out;
+        }
+
+        @keyframes sceneTransition {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        /* --- ЭФФЕКТ СНЕГА --- */
+        .snow-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .snow-effect.active {
+            opacity: 0.3;
+        }
+
+        .snowflake {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        /* --- */
+    </style>
+</head>
+<body class="theme-journal">
+
+    <div id="game-wrapper">
+        <div class="top-bar">
+            <div id="status-bar">Доброжелательность: <span id="benevolence">0</span> | Агрессия: <span id="aggression">0</span> | Авторитет: <span id="authority">0</span> | Лояльность: <span id="loyalty">0</span> | Инвентарь: <span id="inventory">Пусто</span></div>
+            
+            <div class="menu-container">
+                <button class="menu-toggle-btn" onclick="toggleMenu()">☰ Меню</button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" class="dropdown-item" onclick="restartGame(); closeMenu();">↻ Рестарт</a>
+                    <a href="#" class="dropdown-item" onclick="toggleTheme(); closeMenu();">🌗 Тема</a>
+                    <a href="#" class="dropdown-item" onclick="toggleDebug(); closeMenu();">🐞 Дебаг</a>
+                    <a href="#" class="dropdown-item" onclick="toggleFullscreen(); closeMenu();">⛶ Полноэкранный</a>
+                    <a href="#" class="dropdown-item" onclick="saveGame(); closeMenu();">💾 Сохранить</a>
+                    <a href="#" class="dropdown-item" onclick="loadGame(); closeMenu();">📂 Загрузить</a>
+                    <a href="#" class="dropdown-item" onclick="toggleAdaptive(); closeMenu();">🌡 Адаптив</a>
+                </div>
+            </div>
+        </div>
+        
+        <div id="content-area"></div>
+    </div>
+
+    <!-- --- ЭФФЕКТ СНЕГА --- -->
+    <div class="snow-effect" id="snowEffect"></div>
+    <!-- --- -->
+
+    <script>
+        let state = {
+            benevolence: 0,
+            aggression: 0,
+            authority: 0,
+            loyalty: 0,
+            inventory: [],
+            lastIncidentDecision: null
+        };
+
+        let debugMode = false;
+        let adaptiveMode = false;
+        let currentTheme = 'theme-journal'; // По умолчанию
+        let currentSceneId = '';
+        let isTypingActive = true; // Включить анимацию набора
+
+        // --- НОВОЕ: Сцены с атмосферой ---
+        const sceneAtmosphere = {
+            "start": { bgChange: 0, effect: null },
+            "intro_timeline": { bgChange: 0, effect: null },
+            "intro_vladimir": { bgChange: 0, effect: 'snow' },
+            "intro_dob": { bgChange: 0, effect: null },
+            "enter_building": { bgChange: 0.05, effect: null }, // Теплее
+            "corridor_talk": { bgChange: 0.03, effect: null }, // Теплее
+            "boss_wait": { bgChange: 0.02, effect: null }, // Теплее
+            "boss_good": { bgChange: 0, effect: null },
+            "boss_neutral": { bgChange: 0, effect: null },
+            "boss_bad": { bgChange: 0.1, effect: null }, // Немного покраснеть
+            "mission_brief": { bgChange: 0, effect: null },
+            "drive_to_riot": { bgChange: 0, effect: 'snow' },
+            "meet_egorov": { bgChange: 0, effect: 'snow' },
+            "order_negotiate": { bgChange: -0.05, effect: null }, // Немного посветлеть
+            "order_force": { bgChange: 0.15, effect: null }, // Покраснеть
+            "action_starts": { bgChange: 0.2, effect: null }, // Покраснеть сильнее
+            "the_incident": { bgChange: 0.25, effect: null },
+            "the_death": { bgChange: 0.3, effect: null },
+            "investigate": { bgChange: -0.1, effect: null }, // Посветлеть
+            "cover_up": { bgChange: 0.25, effect: null },
+            "drive_home": { bgChange: 0.05, effect: 'snow' },
+            "home_ending": { bgChange: 0, effect: null },
+            // глава 1 атмосфера
+            "chapter1_wakeup": { bgChange: 0, effect: null },
+            "chapter1_call": { bgChange: 0, effect: null },
+            "chapter1_morning": { bgChange: 0, effect: null },
+            "chapter1_stairs": { bgChange: 0, effect: null },
+            "chapter1_department": { bgChange: 0, effect: null },
+            "chapter1_sklad_arrival": { bgChange: 0, effect: 'snow' },
+            "chapter1_sklad_evening": { bgChange: 0, effect: null },
+            "chapter1_sleep_end": { bgChange: 0, effect: null }
+        };
+
+        const story = {
+            "start": {
+                special: "owl",
+                text: `<h1>ТЕСТ 1: Улучшенная Версия<span class="version-tag">V pre-alpha 1.2</span></h1><p>Добро пожаловать в тестовую версию пролога. В истории реализована система статов, выборка, анимации, дебаг меню.</p>`,
+                choices: [
+                    { text: "Начать игру", target: "intro_timeline" },
+                    // --- НОВОЕ: КНОПКА ВЫБОРА ГЛАВЫ ---
+                    { text: "Выбрать главу", target: "select_chapter" }
+                    // ---
+                ]
+            },
+
+            // --- НОВАЯ СЦЕНА: ВЫБОР ГЛАВЫ ---
+            "select_chapter": {
+                text: `<h2>Выбор главы</h2>`,
+                choices: [
+                    { text: "Пролог", target: "intro_timeline" },
+                    { text: "Глава 1", target: "chapter1_wakeup" }
+                ]
+            },
+            // ---
+
+            "intro_timeline": {
+                text: "<p>127 дней прошло с гражданской революции и 49 дней с полного дефолта в стране.</p><p>Окружающий мир застыл в серых тонах.</p><p>Это неудивительно: большинство людей утратили свои сбережения из-за дементаризации валюты. На улицах беспорядки, митинги, и кажется, что хаос стал новым порядком.</p>",
+                choices: [
+                    { text: "Далее", target: "intro_vladimir" }
+                ]
+            },
+
+            "intro_vladimir": {
+                text: "<p>Но среди полчища хмурых лиц один лишь Владимир гордо шагает по мокрому снегу. Новая форма майора сидит на нём так, будто хаос никогда его и не касался. Он — один из немногих, кто вышел из революции победителем.</p>",
+                choices: [
+                    { text: "Далее", target: "intro_dob" }
+                ]
+            },
+
+            "intro_dob": {
+                text: "<p>По словам независимых СМИ, которые ещё удерживаются на плаву, Департамент общественной безопасности, где работает Владимир, успел отмыть перед революцией неприличные суммы рах.</p><p>Цифры называют разные — от двух до трёх миллиардов, но это всего лишь слухи.</p><p>ДОБ сохранил не только свой статус, но и внешнее благополучие, став одним из немногих департаментов, которые пережили бурю с минимальными потерями.</p>",
+                choices: [
+                    { text: "Далее", target: "enter_building" }
+                ]
+            },
+
+            "enter_building": {
+                text: "<p>Владимир пересекает площадь, минует блокпосты и оказывается перед зданием департамента. Охранники на входе даже не спрашивают документы — узнают в лицо. Он проходит внутрь, смахивает мокрый снег с плеча и двигается дальше по коридору.</p>",
+                choices: [
+                    { text: "Далее", target: "corridor_talk" }
+                ]
+            },
+
+            "corridor_talk": {
+                text: "<p>Департамент встречает Владимира привычной усталой суетой. В коридорах никого не интересует бардак за окном — каждый занят своим делом.</p><p>Он проходит мимо курилки. В табачном дыму мелькают знакомые лица, но разговоров о политике или революции нет. Только будничные вещи.</p><p><span class='dialogue-marker'>—</span> Взял себе новую «немку», — лениво бросает кто-то. — Семь секунд до сотни.<br><span class='dialogue-marker'>—</span> Сколько вышло?<br><span class='dialogue-marker'>—</span> Дешевле, чем должно было.</p><p>Владимир молча идёт дальше.</p>",
+                choices: [
+                    { text: "Далее", target: "boss_wait" }
+                ]
+            },
+
+            "boss_wait": {
+                text: "<p>На посту у кабинета начальника секретарша даже не поднимает глаз. Только кивает в сторону двери:</p><p><span class='dialogue-marker'>—</span> Он ждёт.</p><p>В кабинете тихо, только часы негромко отбивают секунды. Начальник даже не смотрит на Владимира, пока тот садится.</p><p><span class='dialogue-marker'>—</span> Майор, — наконец говорит он, отрываясь от бумаг. — Дела.</p>",
+                choices: [
+                    { 
+                        text: "«Все под контролем»", 
+                        target: "boss_good",
+                        effect: () => { state.authority += 1; state.loyalty += 1; updateStatus(); }
+                    },
+                    { 
+                        text: "«Привычная рутина»", 
+                        target: "boss_neutral",
+                        effect: () => { updateStatus(); }
+                    },
+                    { 
+                        text: "«Говно тонет...»", 
+                        target: "boss_bad",
+                        effect: () => { state.authority -= 1; state.aggression += 1; updateStatus(); }
+                    }
+                ]
+            },
+
+            "boss_good": {
+                text: "<p><strong>Владимир:</strong> «Работаем, как часы. В городе шумит, но у нас порядок. Все под контролем.»</p><p>Глава отдела довольно кивает:<br><span class='dialogue-marker'>—</span> Вот это я люблю. Без нытья, без вопросов. Молодец.</p>",
+                choices: [{ text: "Далее", target: "mission_brief" }]
+            },
+            "boss_neutral": {
+                text: "<p><strong>Владимир:</strong> «Без изменений. Ситуация напряжённая, но в целом привычная рутина.»</p><p>Глава отдела равнодушно кивает:<br><span class='dialogue-marker'>—</span> Понял. Работаем.</p>",
+                choices: [{ text: "Далее", target: "mission_brief" }]
+            },
+            "boss_bad": {
+                text: "<p><strong>Владимир:</strong> «Всё как всегда. Говно тонет, дерьмо всплывает, а мы тут сидим и сортируем.»</p><p>Глава отдела морщится:<br><span class='dialogue-marker'>—</span> Философствовать будешь в баре. Пока ты на службе – держи язык за зубами.</p>",
+                choices: [{ text: "Далее", target: "mission_brief" }]
+            },
+
+            "mission_brief": {
+                text: "<p>Результат один: перед Владимиром на столе оказывается папка.</p><p><span class='dialogue-marker'>—</span> Разгоните митинг. Быстро и без глупостей.</p><p>Спустя пару минут он уже выходит на улицу.</p>",
+                choices: [
+                    { text: "Далее", target: "drive_to_riot" }
+                ]
+            },
+
+            "drive_to_riot": {
+                text: "<p>Владимир садится в машину, бросает короткое «Поехали». Водитель молча трогается с места.</p><p>Десять минут спустя они уже у блокпоста. Толпа у перекрёстка не расходится. Мужчины, женщины, даже подростки. Кричат, держат самодельные плакаты, но в основном просто стоят, упёршись взглядами в оцепление.</p><p>Бойцы возле машин озябли, но не жалуются. Кто-то неспешно курит, кто-то крутит дубинку в руках.</p>",
+                choices: [
+                    { text: "Далее", target: "meet_egorov" }
+                ]
+            },
+
+            "meet_egorov": {
+                text: "<p>Главный здесь — капитан Егоров. Коренастый, с густой бородой, подстриженной ровно, словно под линейку. Макушка выбрита до блеска. Нос кривой — след старого перелома. Говорит негромко, с тягучим южным акцентом.</p><p><span class='dialogue-marker'>—</span> Майор.</p><p><span class='dialogue-marker'>—</span> Что тут? – без лишних слов спрашивает Владимир.</p><p>Егоров лениво пожимает плечами, оглядываясь на толпу.</p><p><span class='dialogue-marker'>—</span> Стоят. Орут. Двигаются к нам. – Он усмехается, выплёвывая в снег тёмную слюну. – Мы, по-твоему, тут просто так мёрзнем?</p>",
+                choices: [
+                    { text: "«Разгоняйте. Силой.»", target: "order_force", effect: () => { state.aggression += 1; state.authority += 1; updateStatus(); } },
+                    { text: "«Попробуйте уговорить сначала.»", target: "order_negotiate", effect: () => { state.benevolence += 1; state.loyalty += 1; updateStatus(); } }
+                ]
+            },
+
+            "order_negotiate": {
+                text: "<p>Владимир смотрит на толпу и говорит:</p><p><span class='dialogue-marker'>—</span> Попробуйте уговорить. Без силы, если возможно.</p><p>Егоров хмыкает, но кивает. Бойцы подходят к толпе, кричат предупреждения. Толпа колеблется, но начинает расходиться мирно.</p><p>Однако несколько упрямцев остаются...</p>",
+                choices: [
+                    { text: "Далее", target: "action_starts" }
+                ]
+            },
+
+            "order_force": {
+                text: "<p>Владимир смотрит на митингующих. Потом ровно, без эмоций говорит:</p><p><span class='dialogue-marker'>—</span> Разгоняйте. Силой.</p><p>Егоров скалится, словно услышал анекдот.</p><p><span class='dialogue-marker'>—</span> Ты прям как начальство. Только приехал – и сразу разгоняйте.</p><p>Владимир делает шаг ближе.</p><p><span class='dialogue-marker'>—</span> Да. Разгоняйте. Тех, кто не уйдёт – вязать. Или ломать. В СИЗО мест нет.</p><p>Пара секунд тишины. Егоров медленно кивает.</p><p><span class='dialogue-marker'>—</span> Услышал.</p>",
+                choices: [
+                    { text: "Далее", target: "action_starts" }
+                ]
+            },
+
+            "action_starts": {
+                text: "<p>Он подаёт бойцам знак. В следующий миг воздух рвёт первый удар.</p><p>Воздух наполнился глухими ударами, криками, хрустом. Несколько митингующих повалились на землю, а бойцы набросились на них, выкручивая руки, ставя колени на спины. Кто-то пытался вырваться, но всё было бесполезно.</p><p>Толпа дрогнула, побежала. Люди, ещё минуту назад кричавшие проклятия, теперь разрывали строй, спасаясь в узких переулках.</p><p>Остались лишь те, кто не мог уйти.</p>",
+                choices: [
+                    { text: "Далее", target: "the_incident" }
+                ]
+            },
+
+            "the_incident": {
+                text: "<p>Один из них – худой мужчина в помятой куртке – был прижат лицом к земле. Он кашлял. Глухо, надрывно, с булькающим звуком. Казалось, его лёгкие разрываются изнутри.</p><p><span class='dialogue-marker'>—</span> Да заткнись ты! – рявкнул один из бойцов, сжимая дубинку.</p><p>Но кашель не прекращался. Мужчина бился в судорогах, царапал асфальт пальцами.</p><p>Боец зарычал и с силой врезал ему ногой в грудь.</p>",
+                choices: [
+                    { text: "Далее", target: "the_death" }
+                ]
+            },
+
+            "the_death": {
+                text: "<p>Кашель оборвался.</p><p>Тело дёрнулось – и застыло.</p><p>Мгновенная тишина.</p><p>Владимир почувствовал, как внутри всё холодеет.</p><p><span class='dialogue-marker'>—</span> Что ты наделал, сука?! – взревел он, оборачиваясь к Егорову.</p><p>Тот, нахмурившись, смотрел на неподвижное тело.</p><p><span class='dialogue-marker'>—</span> Твою мать… – глухо выдохнул Владимир.</p><p>Егоров криво усмехнулся, пожав плечами.</p><p><span class='dialogue-marker'>—</span> Сам сдох.</p>",
+                choices: [
+                    { 
+                        text: "«Он умер сам!»", 
+                        target: "cover_up",
+                        effect: () => { state.aggression += 1; state.loyalty += 1; state.lastIncidentDecision = "cover"; updateStatus(); }
+                    },
+                    { 
+                        text: "«Вызвать медиков!»", 
+                        target: "investigate",
+                        effect: () => { state.benevolence += 1; state.authority -= 1; state.lastIncidentDecision = "medics"; updateStatus(); }
+                    }
+                ]
+            },
+
+            "investigate": {
+                text: "<p><span class='dialogue-marker'>—</span> Вызвать медиков! – приказал Владимир. – Это не просто смерть, нужно разобраться.</p><p>Егоров нахмурился, но подчинился. Медики приехали, тело увезли. Босс будет недоволен задержкой...</p>",
+                choices: [
+                    { text: "Далее", target: "drive_home" }
+                ]
+            },
+
+            "cover_up": {
+                text: "<p><span class='dialogue-marker'>—</span> В машину его. – Голос Владимира дрогнул, но он тут же взял себя в руки. – На носилки, быстро. Он умер сам, понял? Сам!</p><p>Бойцы переглянулись.</p><p><span class='dialogue-marker'>—</span> Давайте! – рявкнул он.</p><p>Два бойца подняли тело, положили на носилки и поспешно понесли к машинам.</p><p>Владимир сжал кулаки.</p>",
+                choices: [
+                    { text: "Далее", target: "drive_home" }
+                ]
+            },
+
+            "drive_home": {
+                text: "<p>После того как тело было забрано, Владимир снова сел в машину. Водитель молча завёл двигатель, и они поехали в сторону города.</p><p>Машина плавно катала по ночному городу, и вот уже Владимир выходит возле своего дома. Он не торопился. Несколько шагов — и он у ларька с выпечкой.</p><p><span class='dialogue-marker'>—</span> Чёрный кофе и пирожок.</p><p>Продавщица передала заказ, и Владимир не стал терять время. Он побрёл к дому, прихлёбывая горячий кофе, чувствовал, как холод пробирает до костей. Пирожок был холодным, но это уже не имело значения.</p>",
+                choices: [
+                    { text: "Далее", target: "home_ending" }
+                ]
+            },
+
+            "home_ending": {
+                text: "<p>Он подошёл к своей маленькой, старой квартире, открыл дверь и зашёл внутрь. Тут было как всегда. Снял куртку, бросил фуражку на стол. Поставил кофе и пирожок на стол, открыл бутылку виски и налил немного в стакан.</p><p>Закурив, он спокойно наблюдал, как день уходит. На улице холодало, вечер начинал брать своё. Силуэт за окном тускло горел в ночи.</p><p>День был как все остальные.</p><p><em>Конец пролога. В следующих частях статы (доброжелательность, агрессия, авторитет, лояльность) будут влиять на мнение персонажей и сюжетные ветки...</em></p>",
+                choices: [
+                    { text: "В Меню", target: "start" }
+                ]
+            },
+
+            /* ------------------ ГЛАВА 1 ------------------ */
+            "chapter1_wakeup": {
+                text: `
+                    <h1>Чёрный вторник — Глава 1</h1>
+                    <p>128-й день после революции.<br>50-й день дефолта.</p>
+                    <p><strong>6:28</strong></p>
+                    <p>Телефон разбудил его резким, коротким звонком. Владимир долго лежал, не открывая глаз, ощущая тяжесть сна в висках. Внутри всё было мокро и вязко — вчерашний виски не растворился, остался во рту горечью и сигаретной пылью. На столе стоял недопитый стакан, рядом — зачерствевший пирожок.</p>
+                    <p>За окном снег висел в воздухе, не падая и не ложась на землю, будто сама серость города стала плотной, осязаемой массой. Хлопья медленно оседали, тут же превращаясь в унылую, мерзкую грязевую кашу.</p>
+                `,
+                choices: [
+                    { text: "Далее", target: "chapter1_call" }
+                ]
+            },
+            "chapter1_call": {
+                text: `
+                    <p>Телефон зазвонил снова. Он нащупал трубку. Голос начальника был ровным, без интонаций:</p>
+                    <p><span class="dialogue-marker">—</span> В департамент. Сейчас. В гражданке. Срочно.</p>
+                    <p>Щелчок. Гудки.</p>
+                    <p>Он положил трубку на стол, сделал медленный вдох и на секунду замер, слушая тишину, наполненную лишь низким гулом телевизора и каплями воды, падающими с трубы на подоконник.</p>
+                    <p>На экране — женщина-диктор с усталым лицом:</p>
+                    <p>— Министерство здравоохранения Зиркути информирует о росте заболеваемости острыми респираторными инфекциями тяжёлого течения…</p>
+                `,
+                choices: [
+                    { text: "Далее", target: "chapter1_morning" }
+                ]
+            },
+            "chapter1_morning": {
+                text: `
+                    <p>Он поднялся. Ноги ватные, но держат. Душ был холодным — горячей воды не было уже месяц, и это давно перестало удивлять. Вода стекала по плечам, холод пробирал до костей, но мысли оставались пустыми.</p>
+                    <p>Он надел джинсы, старый свитер, кожаную куртку. Форму оставил висеть в шкафу — фуражка смотрела на него пустыми глазами.</p>
+                    <p>На кухне он достал банку с сухарями, залил кипятком и размешал ложкой. Пар поднимался медленно, оставляя запах чуть подслащённого хлеба. Он ел стоя, без аппетита, глотая механически, будто отсчитывал минуты до выхода.</p>
+                `,
+                choices: [
+                    { text: "Посмотреть в зеркало", target: "chapter1_mirror" },
+                    { text: "Молча выйти", target: "chapter1_stairs" }
+                ]
+            },
+            "chapter1_mirror": {
+                text: `
+                    <p>Он подошёл и протёр стекло тряпкой. Лицо в отражении казалось чужим: красные глаза, жёсткая щетина, бледная кожа. Он задержал взгляд — не чтобы оценить себя, а чтобы убедиться, что всё ещё жив.</p>
+                    <p><span class="dialogue-marker">—</span> Пойдёт, — тихо сказал он.</p>
+                `,
+                choices: [
+                    { text: "Далее", target: "chapter1_stairs" }
+                ]
+            },
+            "chapter1_stairs": {
+                text: `
+                    <p>Спуск по лестнице был медленным ритуалом: скрип первой ступени, затем второй, капли воды с потолка, запах старого табака и мочи. Всё это встречало его привычной, тягучей пустотой.</p>
+                    <p>Двор был пуст. Ни бабок у подъезда, ни детей, ни собак. Даже мусор на асфальте выглядел неподвижным, как статуя.</p>
+                    <p>По проспекту Лейтенанта Ржавина медленно тянулась колонна «Уралов» и КАМАЗов. Люди стояли на тротуарах, молча наблюдая. Снег с грязью превратил всё в липкую кашу. Никто не спешил. Никто уже не удивлялся.</p>
+                `,
+                choices: [
+                    { text: "Далее", target: "chapter1_department" }
+                ]
+            },
+            "chapter1_department": {
+                text: `
+                    <p>Вход в ДОБ встретил тишиной. Пост, бойцы, холл — всё выглядело уставшим. Плакат «Сдай кровь — спаси жизнь» висел криво и казался нелепым.</p>
+                    <p>В курилке был только парень, который вчера хвастался «немкой». Он лежал на диване с откинутой головой и пустым взглядом. Медик в халате медленно закурил и, не спеша, смотрел в окно.</p>
+                    <p>Секретарша прошептала, не поднимая глаз:</p>
+                    <p><span class="dialogue-marker">—</span> Он ждёт.</p>
+                    <p>В кабинете начальник не смотрел на Владимира, пока тот садился. На столе лежали две папки и пропуск с красной полосой. Он не поздоровался.</p>
+                    <p>— Егорова повысили, — сказал он тихо. — С сегодняшнего утра.</p>
+                    <p>Владимир кивнул. Коротко. Без эмоций.<br>Пауза между ними была плотнее любых слов.</p>
+                    <div id="chapter1_flag"></div>
+                    <p>Он подвинул одну из папок.</p>
+                `,
+                choices: [
+                    { 
+                        text: "Если вчера ты выбрал 'вызвать медиков'", 
+                        target: "chapter1_case_investigate",
+                        condition: (state) => state.lastIncidentDecision === 'medics'
+                    },
+                    { 
+                        text: "Если вчера ты сказал, что 'он умер сам'", 
+                        target: "chapter1_case_cover_up",
+                        condition: (state) => state.lastIncidentDecision === 'cover'
+                    },
+                    {
+                        text: "Продолжить (по умолчанию)",
+                        target: "chapter1_case_default"
+                    }
+                ]
+            },
+            "chapter1_case_investigate": {
+                text: `
+                    <p><span class='dialogue-marker'>—</span> Ты хотел отдать труп гражданским. Это означало бы признание, что мы убиваем людей на митингах. Егоров перехватил машину и отправил её куда нужно. Но видео уже гуляет. «Отряд мира» орёт. Я тебя прикрыл, но цена есть. С этого дня ты под Егоровым.</p>
+                `,
+                choices: [
+                    { text: "Далее", target: "chapter1_new_orders" }
+                ]
+            },
+            "chapter1_case_cover_up": {
+                text: `
+                    <p><span class='dialogue-marker'>—</span> Ты всё сделал правильно. Смерть старпера — не наша вина. Версия держится. Но пострадавших много, камеры всё сняли. «Отряд мира» требует крайнего. Полностью прикрыть тебя я не могу, но и оставить на прежнем месте — тоже. С этого дня ты под Егоровым.</p>
+                `,
+                choices: [
+                    { text: "Далее", target: "chapter1_new_orders" }
+                ]
+            },
+            "chapter1_case_default": {
+                text: `
+                    <p><span class='dialogue-marker'>—</span> Ситуация неоднозначна. Камеры сняли многое, люди шумят. По факту — тебе придётся выполнить новое задание. С этого дня — смотри приказы.</p>
+                `,
+                choices: [
+                    { text: "Далее", target: "chapter1_new_orders" }
+                ]
+            },
+            "chapter1_new_orders": {
+                text: `
+                    <p>Он подвинул второй документ ближе.</p>
+                    <p><span class='dialogue-marker'>—</span> Сегодня в 14:00 на склад «Северный-2» приходит конвой Минобороны. Код груза — «Комплект-М». Приёмка и разгрузка. Без лишних глаз и вопросов. Всё.</p>
+                    <p>Владимир молча взял бумагу.</p>
+                    <p>Коридор был пуст. Его шаги эхом отражались от стен. На улице колонна всё ещё тянулась; последний рефрижератор проехал мимо. На борту мелом было написано: «Кырск — Тарвель. Пустой».</p>
+                    <p>Он закурил. Дым растворился в сером утре.</p>
+                `,
+                choices: [
+                    { text: "Далее", target: "chapter1_sklad_arrival" }
+                ]
+            },
+            "chapter1_sklad_arrival": {
+                text: `
+                    <p><strong>Склад «Северный-2» — 13:51</strong></p>
+                    <p>Бывшее овощехранилище: забитый забор, колючка, пустые ангары. Прапорщик в ОЗК без знаков различия протянул документы на приёмку.</p>
+                    <p>«Уралы» заезжали медленно. Солдаты в респираторах выгружали коробки: «Лепесток-200», складные койки, системы для капельниц. Потом — поддоны с чёрными мешками на молнии. На одном наклейка:</p>
+                    <p>«Мешок для транспортировки биологических останков. 120 л. Герметичный».</p>
+                    <p>Двое молодых солдат переглянулись:</p>
+                    <p>— В Кырске морги уже не справляются…<br>— Бред. Если бы так, нас бы здесь не было.</p>
+                    <p>Владимир стоял в стороне. Снег усиливался. Склад пах мокрым мхом и сырой землёй. Он сел на старый диван и тихо сказал:</p>
+                    <p>— Это надолго…</p>
+                `,
+                choices: [
+                    { text: "Далее", target: "chapter1_sklad_evening" }
+                ]
+            },
+            "chapter1_sklad_evening": {
+                text: `
+                    <p><strong>Склад «Северный-2» — 17:21</strong></p>
+                    <p>— Товарищ майор…<br>— Товарищ майор, проснитесь.</p>
+                    <p>Владимир открыл глаза и пошатнулся.</p>
+                    <p>— А… слушаю…</p>
+                    <p>— Распишитесь в ведомости, пожалуйста.</p>
+                    <p>— Конечно… — ответил он хрипло.</p>
+                    <p>Он протёр лицо влажной салфеткой и поднялся. Машин уже не было. Вокруг — коробки с медицинской техникой, разной степени сложности и важности.</p>
+                    <p>На улице шум не стих — наоборот, усилился. К митингующим и мародёрам добавились волонтёры «Отряда мира»: вечные недовольные всем подряд. Они орали в громкоговорители про грехи, земные блага и прочую чушь.</p>
+                    <p>Иногда казалось, что у них в офисе вместо главы управления стоит полоумный идиот, тыкающий пальцем в случайные слова, которые волонтёры потом с энтузиазмом распространяют.</p>
+                    <p>«Отряд мира» выглядел как всемирный рофл. Никто не помнил, откуда они взялись и зачем. Но все знали: пока они не сделали ничего полезного для страны и её граждан, требуя при этом 11% бюджета — на расширение и «поддержку бедных».</p>
+                    <p>Владимир вышел со склада ближе к вечеру. Воздух стал гуще, холоднее, будто город начал задерживать дыхание. Снег сменился мелким ледяным дождём, который лип к лицу и одежде.</p>
+                    <p>Он шёл пешком. Машину оставил — бензин берегли, да и смысла не было. По дороге он заметил движение на проспекте. Колонна военной техники медленно шла по центральной полосе: бронетранспортёры, «Уралы», санитарные фургоны с заклеенными окнами.</p>
+                    <p>На головной машине солдат стоял в люке с громкоговорителем.</p>
+                    <p>— Внимание! — голос был хриплый, срывающийся, усиленный металлическим эхом. — С сегодняшнего дня в городе вводится комендантский час. Всем гражданам, независимо от места работы и должности, в течение одного часа проследовать по месту проживания. Оставаться дома. Ожидать дальнейших инструкций на главном государственном новостном канале.</p>
+                    <p>Люди на тротуарах замерли. Кто-то сразу развернулся и пошёл назад. Кто-то стоял, будто не понял слов. Колонна шла дальше, не снижая скорости.</p>
+                    <p>Владимир свернул к магазину на углу — маленький, с облупленной вывеской. Дверь уже была заперта. Внутри торопливо гасли свет, кто-то дёргал решётку. Продавщица что-то кричала, но её не было слышно за шумом двигателей.</p>
+                    <p>Подъезд встретил холодом и темнотой. Лифт не работал. Он поднялся пешком, считая пролёты. В квартире было тихо. Он снял куртку, поставил кастрюлю на электрическую плиту, налил воды.</p>
+                    <p>Щёлкнул выключатель. Плита не загорелась. Свет моргнул — и погас совсем.</p>
+                    <p>Тишина длилась несколько секунд, затем с улицы донёсся вой сирен. Глухие команды. Короткие выкрики. Где-то хлопнула дверь, раздался женский крик, оборвавшийся резко и пусто.</p>
+                    <p>Владимир сел на табурет и посмотрел на тёмную плиту. Потом выключил её, будто это имело значение. Лёг на кровать, не раздеваясь, уставившись в потолок.</p>
+                    <p>Город за стенами жил своей новой жизнью — без света, без правил, без объяснений.</p>
+                    <p>Он закрыл глаза.</p>
+                    <p><em>Конец Глава 1. Продолжение следует...</em></p>
+                `,
+                choices: [
+                    { text: "В Меню", target: "start" }
+                ]
+            }
+        };
+
+        const contentDiv = document.getElementById("content-area");
+        const benevolenceSpan = document.getElementById("benevolence");
+        const aggressionSpan = document.getElementById("aggression");
+        const authoritySpan = document.getElementById("authority");
+        const loyaltySpan = document.getElementById("loyalty");
+        const inventorySpan = document.getElementById("inventory");
+        const statusBar = document.getElementById("status-bar");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+        const snowEffect = document.getElementById("snowEffect");
+
+        function getOwlSVG() {
+            return `
+            <svg id="owl-logo" viewBox="0 0 100 100">
+                <polygon points="20,30 50,15 80,30 80,70 50,85 20,70" />
+                <polygon points="20,30 30,15 15,10" />
+                <polygon points="80,30 70,15 85,10" />
+                <polygon points="35,40 40,45 35,50 30,45" fill="var(--bg-color)" stroke="var(--accent-color)" stroke-width="1"/>
+                <polygon points="65,40 70,45 65,50 60,45" fill="var(--bg-color)" stroke="var(--accent-color)" stroke-width="1"/>
+                <polygon points="45,60 55,60 50,70" fill="var(--bg-color)" stroke="var(--accent-color)" stroke-width="1"/>
+            </svg>`;
+        }
+
+        // --- НОВОЕ: Анимация набора текста ---
+        function typeWriter(text, element, speed = 20) {
+            return new Promise((resolve) => {
+                // Временно убираем HTML, работаем с plain text
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = text;
+                const plainText = tempDiv.textContent;
+
+                element.innerHTML = '';
+                let i = 0;
+
+                const timer = setInterval(() => {
+                    if (i < plainText.length) {
+                        element.textContent += plainText.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(timer);
+                        // После окончания анимации вставляем HTML
+                        element.innerHTML = text;
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+        // ---
+
+        function showScene(sceneId) {
+            const scene = story[sceneId];
+            let html = "";
+
+            if (!scene) {
+                contentDiv.innerHTML = "<p>Ошибка: сцена не найдена.</p>";
+                return;
+            }
+
+            if (scene.special === "owl") {
+                html += getOwlSVG();
+            }
+
+            html += scene.text;
+
+            if (scene.choices) {
+                html += '<div class="choice-container">';
+                // Фильтрация выборов по условию
+                const availableChoices = scene.choices.filter(choice => !choice.condition || choice.condition(state));
+                
+                // Если нет доступных выборов, добавляем "Далее"
+                if (availableChoices.length === 0) {
+                    html += `<button class="choice-btn" onclick="handleChoice('${sceneId}_continue', null)">Далее</button>`;
+                } else {
+                    availableChoices.forEach(choice => {
+                        html += `<button class="choice-btn" onclick="handleChoice('${choice.target}', ${JSON.stringify(choice.effect)})">${choice.text}</button>`;
+                    });
+                }
+                html += '</div>';
+            }
+
+            contentDiv.classList.add('loading');
+            setTimeout(() => {
+                contentDiv.innerHTML = html;
+                contentDiv.classList.remove('loading');
+                contentDiv.classList.add('scene-transition');
+                setTimeout(() => {
+                    contentDiv.classList.remove('scene-transition');
+                }, 300);
+                
+                contentDiv.dataset.scene = sceneId;
+                currentSceneId = sceneId;
+                
+                // --- НОВОЕ: Анимация набора текста ---
+                if (isTypingActive) {
+                    const paragraphs = contentDiv.querySelectorAll('p');
+                    let delay = 0;
+                    paragraphs.forEach(p => {
+                        const text = p.innerHTML;
+                        p.innerHTML = '';
+                        setTimeout(() => {
+                            typeWriter(text, p, 20); // Скорость набора
+                        }, delay);
+                        delay += (text.replace(/<[^>]+>/g, '').length + 1) * 12; // более адекватная задержка
+                    });
+                }
+                // ---
+
+                // --- НОВОЕ: Адаптив ---
+                if (adaptiveMode) {
+                    applyAdaptiveChanges(sceneId);
+                }
+                // ---
+
+                const btns = contentDiv.querySelectorAll(".choice-btn");
+                scene.choices.forEach((choice, index) => {
+                    btns[index].onclick = () => {
+                        if (choice.effect) choice.effect();
+                        showScene(choice.target);
+                        window.scrollTo(0, 0);
+                    };
+                });
+            }, 200);
+        }
+
+        function handleChoice(target, effect) {
+            if (effect) effect();
+            showScene(target);
+            window.scrollTo(0, 0);
+        }
+
+        function updateStatus() {
+            if (!debugMode) return;
+            benevolenceSpan.textContent = state.benevolence;
+            aggressionSpan.textContent = state.aggression;
+            authoritySpan.textContent = state.authority;
+            loyaltySpan.textContent = state.loyalty;
+            inventorySpan.textContent = state.inventory.length > 0 ? state.inventory.join(", ") : "Пусто";
+        }
+
+        function toggleTheme() {
+            const themes = ['theme-night', 'theme-day', 'theme-journal'];
+            const currentIndex = themes.indexOf(currentTheme);
+            const nextIndex = (currentIndex + 1) % themes.length;
+            currentTheme = themes[nextIndex];
+            
+            document.body.className = currentTheme;
+            localStorage.setItem('selectedTheme', currentTheme);
+        }
+
+        // Загрузка темы при старте
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('selectedTheme');
+            if (savedTheme && ['theme-night', 'theme-day', 'theme-journal'].includes(savedTheme)) {
+                currentTheme = savedTheme;
+                document.body.className = currentTheme;
+            }
+            showScene("start");
+            updateStatus();
+        }
+
+        function restartGame() {
+            state = { benevolence: 0, aggression: 0, authority: 0, loyalty: 0, inventory: [], lastIncidentDecision: null };
+            updateStatus();
+            showScene("start");
+        }
+
+        function toggleDebug() {
+            debugMode = !debugMode;
+            statusBar.style.display = debugMode ? 'block' : 'none';
+            if (debugMode) updateStatus();
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function saveGame() {
+            try {
+                localStorage.setItem("gameState", JSON.stringify({ state, currentScene: contentDiv.dataset.scene || "start", debugMode }));
+                alert("Игра сохранена!");
+            } catch(e) {
+                alert("Ошибка при сохранении игры: " + e.message);
+            }
+        }
+
+        function loadGame() {
+            try {
+                const saved = localStorage.getItem("gameState");
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state = parsed.state;
+                    debugMode = parsed.debugMode;
+                    // приведение к текущим полям на случай старых сохранений
+                    if (typeof state.lastIncidentDecision === 'undefined') state.lastIncidentDecision = null;
+                    // осторожно переключаем дебаг (поведение как было в оригинале)
+                    if (debugMode) toggleDebug();
+                    showScene(parsed.currentScene || "start");
+                    alert("Игра загружена!");
+                } else {
+                    alert("Нет сохранений!");
+                }
+            } catch(e) {
+                alert("Ошибка при загрузке игры: " + e.message);
+            }
+        }
+
+        // --- НОВОЕ: Адаптив ---
+        function toggleAdaptive() {
+            adaptiveMode = !adaptiveMode;
+            if (adaptiveMode) {
+                alert("Адаптив включён. Фон будет меняться в зависимости от сцены.");
+                if (currentSceneId) {
+                    applyAdaptiveChanges(currentSceneId);
+                }
+            } else {
+                alert("Адаптив выключен.");
+                // Сброс эффектов
+                document.body.style.backgroundColor = '';
+                snowEffect.classList.remove('active');
+            }
+        }
+
+        function applyAdaptiveChanges(sceneId) {
+            const atm = sceneAtmosphere[sceneId] || { bgChange: 0, effect: null };
+
+            // Изменение фона
+            if (atm.bgChange !== 0) {
+                const originalBg = getComputedStyle(document.body).backgroundColor;
+                // Извлекаем RGB
+                const match = originalBg.match(/\d+/g);
+                if (match) {
+                    let r = parseInt(match[0]);
+                    let g = parseInt(match[1]);
+                    let b = parseInt(match[2]);
+
+                    // Применяем смещение (красный для положительного, синий/зелёный для отрицательного)
+                    if (atm.bgChange > 0) {
+                        r = Math.min(255, r + Math.floor(atm.bgChange * 100));
+                        g = Math.min(255, g + Math.floor(atm.bgChange * 50)); // Теплее
+                    } else if (atm.bgChange < 0) {
+                        g = Math.min(255, g + Math.floor(Math.abs(atm.bgChange) * 50));
+                        b = Math.min(255, b + Math.floor(Math.abs(atm.bgChange) * 50));
+                    }
+
+                    document.body.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+                }
+            } else {
+                // Сброс до CSS-переменной
+                document.body.style.backgroundColor = '';
+            }
+
+            // Эффекты
+            if (atm.effect === 'snow') {
+                createSnowEffect();
+                snowEffect.classList.add('active');
+            } else {
+                snowEffect.classList.remove('active');
+            }
+        }
+
+        function createSnowEffect() {
+            snowEffect.innerHTML = '';
+            for (let i = 0; i < 50; i++) {
+                const flake = document.createElement('div');
+                flake.classList.add('snowflake');
+                flake.style.width = `${Math.random() * 3 + 2}px`;
+                flake.style.height = flake.style.width;
+                flake.style.left = `${Math.random() * 100}vw`;
+                flake.style.top = `${Math.random() * 100}vh`;
+                flake.style.opacity = Math.random() * 0.5 + 0.3;
+                flake.style.animation = `fall ${Math.random() * 5 + 5}s linear infinite`;
+                snowEffect.appendChild(flake);
+            }
+
+            // Добавляем анимацию падения
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fall {
+                    to { transform: translateY(100vh); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        // ---
+
+        function toggleMenu() {
+            dropdownMenu.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            dropdownMenu.classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-toggle-btn') && !event.target.closest('.dropdown-menu')) {
+                closeMenu();
+            }
+        }
+    </script>
+</body>
+</html>

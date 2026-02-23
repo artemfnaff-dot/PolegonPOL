@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест: На танкиста - Polegon</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Оверлей предупреждений -->
+    <div id="warning-overlay" class="warning-overlay">
+        <div class="warning-header">
+            <span class="warning-title">Внимание</span>
+        </div>
+        <div class="warning-content">
+            <p id="warning-text" class="warning-text"></p>
+            <button id="warning-next-btn" class="btn btn-warning">Далее</button>
+        </div>
+    </div>
+
+    <!-- Экран квиза -->
+    <section id="quiz-screen" class="screen active">
+        <div class="container">
+            <button class="back-btn" onclick="window.history.back()">
+                <span>←</span> Назад
+            </button>
+
+            <h2 class="section-title">Тест: Проверка на танкиста</h2>
+            <p class="section-subtitle">Проверка способностей и знаний по игре танки онлайн</p>
+
+            <!-- Интро перед тестом -->
+            <div id="quiz-intro" class="quiz-intro">
+                <div class="intro-card">
+                    <p class="intro-text">
+                        В данном тесте вам понадобиться использовать свой интелект, скилл и применять знания
+                        полученные за множество лет бесконечных игр в танки онлайн. Тест был составлен экспертом в области
+                        танкостроения и экспертом в поварском деле, по совместительсву еще и программистом, психологом и
+                        экспертом в области старчества и познания пенсионеров.
+                    </p>
+                    <p class="intro-warning">
+                        <strong>Очень рекомендуем проходить этот тест на трезвую голову с полным погружением и готовностью мыслить рационально.</strong>
+                    </p>
+                    <button id="start-quiz-btn" class="btn btn-large">Начать тест</button>
+                </div>
+            </div>
+
+            <!-- Экран с вопросами -->
+            <div id="quiz-questions" class="quiz-questions" style="display: none;">
+                <!-- Вопросы будут добавлены через JS -->
+            </div>
+
+            <!-- Экран с результатом -->
+            <div id="quiz-result" class="quiz-result" style="display: none;">
+                <div class="result-card">
+                    <div class="result-tank-placeholder"></div>
+                    <h3 id="result-title" class="result-title"></h3>
+                    <p id="result-description" class="result-description"></p>
+                    <ul id="result-features" class="result-features"></ul>
+                    <p id="result-history" class="result-history"></p>
+                </div>
+                <div class="result-buttons">
+                    <button id="restart-quiz-btn" class="btn">Пройти заново</button>
+                    <button id="close-quiz-btn" class="btn" onclick="window.history.back()">Вернуться назад</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Аудио элементы -->
+    <audio id="horo-audio" loop>
+        <source src="../музыка/Neizvesten_-_Nemeckaya_pesnya_pro_Pivo_Was_wollen_wir_trinkenperevod_79388847.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="drum-audio">
+        <source src="../музыка/барабан.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="shot-audio">
+        <source src="../музыка/выстрел.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="brainrot-audio" loop>
+        <source src="../музыка/Брейнрот.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="aim-audio" loop>
+        <source src="../музыка/аим.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="starwars-audio">
+        <source src="../музыка/звездные войны.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="js/tankist-quiz.js"></script>
+</body>
+</html>
